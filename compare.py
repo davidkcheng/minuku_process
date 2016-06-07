@@ -55,7 +55,7 @@ def getRecall():
     correct = 0
     total = 0
 
-    for i in range(0, len(Output)):
+    for i in range(0, len(Answer)):
         
         if Answer[i].activity == Output[i].activity:
             currentframe = Answer[i].starttime + framesize*1000
@@ -65,8 +65,9 @@ def getRecall():
                     correct += 1
                 currentframe = currentframe + framesize*1000
                 total += 1
-                      
-    Recall = round((float(correct)/float(total))*100)
+#     print correct
+#     print total                
+    Recall = round((float(correct)/float(total))*100, 2)
 #     return Recall
          
     
@@ -78,7 +79,7 @@ def getPrecision():
     total = 0
 
     for i in range(0, len(Output)):
-        
+#         print i
         if Output[i].activity == Answer[i].activity:
             currentframe = Output[i].starttime + framesize*1000
             while currentframe < Output[i].endtime:
@@ -87,8 +88,8 @@ def getPrecision():
                 currentframe = currentframe + framesize*1000
                 total += 1
 #     print correct
-#     print total     
-    Precision = round((float(correct)/float(total))*100)
+#     print total
+    Precision = round((float(correct)/float(total))*100, 2)
 #     return Precision
 
 

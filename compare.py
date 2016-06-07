@@ -1,13 +1,12 @@
-import urllib, json
-
 Answer = []
-Target = []
-Recall = 0;
-Precision = 0;
+Output = []
+Recall = 0
+Precision = 0
+framesize = 20
 
 class Trans:
-    starttime = 0;
-    endtime= 0;
+    starttime = 0
+    endtime= 0
     activity = ""
 
 def readAnswer(filename):
@@ -23,16 +22,16 @@ def readAnswer(filename):
     
         trans.starttime = int(sub[0])
         trans.endtime = int(sub[1])
-        trans.activity = sub[2]
+        trans.activity = sub[4].strip()
     
         Answer.append(trans)
         line = input_file.readline()
    
     input_file.close()
 
-def readTarget(filename):
+def readOutput(filename):
     
-    global Target
+    global Output
     
     input_file = open(filename, 'rU')
     line = input_file.readline()
@@ -43,61 +42,65 @@ def readTarget(filename):
     
         trans.starttime = int(sub[0])
         trans.endtime = int(sub[1])
-        trans.activity = sub[2]
+        trans.activity = sub[4].strip()
     
-        Target.append(trans)
+        Output.append(trans)
         line = input_file.readline()
     input_file.close()
 
-
-# def getRecall():
-#     global Recall
-#     
-#     for trans in Answer:
-#         
+# get number of correct in Answer divided by total frame in Answer
+def getRecall():
+    global Recall
     
-def getPrecision():
+    correct = 0
+    total = 0
+
+    for i in range(0, len(Output)):
+        
+        if Answer[i].activity == Output[i].activity:
+            currentframe = Answer[i].starttime + framesize*1000
+            
+            while currentframe < Answer[i].endtime:
+                if currentframe > Output[i].starttime and currentframe < Output[i].endtime:
+                    correct += 1
+                currentframe = currentframe + framesize*1000
+                total += 1
+                      
+    Recall = round((float(correct)/float(total))*100)
+#     return Recall
+         
+    
+# get number of correct in Output divided by total frame in Output
+def getPrecision(): 
     global Precision
     
-    error = 0;
-    total = 0;
-    
-    for i in range(0, len(Answer)):
+    correct = 0
+    total = 0
 
-#         larger than 10 seconds
-        if abs(Answer[i].starttime - Target[i].starttime) > 10000: 
-            error = error + abs(Answer[i].starttime - Target[i].starttime)
-        if abs(Answer[i].endtime - Target[i].endtime) > 10000:
-            error = error + abs(Answer[i].endtime - Target[i].endtime)
-    
-        total = total + max(Answer[i].endtime - Answer[i].starttime, Target[i].endtime - Target[i].starttime)
+    for i in range(0, len(Output)):
+        
+        if Output[i].activity == Answer[i].activity:
+            currentframe = Output[i].starttime + framesize*1000
+            while currentframe < Output[i].endtime:
+                if currentframe > Answer[i].starttime and currentframe < Answer[i].endtime:
+                    correct += 1
+                currentframe = currentframe + framesize*1000
+                total += 1
+#     print correct
+#     print total     
+    Precision = round((float(correct)/float(total))*100)
+#     return Precision
 
-def GoogPlac(lat,lng, key):
-    #making the url
-    AUTH_KEY = key
-    LOCATION = str(lat) + "," + str(lng)
-#     RADIUS = radius
-#     TYPES = types
-    MyUrl = ('https://maps.googleapis.com/maps/api/place/nearbysearch/json'
-         '?location=%s'
-         '&sensor=false&key=%s') % (LOCATION, AUTH_KEY)
-    #grabbing the JSON result
-    response = urllib.urlopen(MyUrl)
-    jsonRaw = response.read()
-    jsonData = json.loads(jsonRaw)
-    return jsonData
-
-
-# https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=42.279532,-83.741024&radius=20&key=AIzaSyDkmJL928g4hLfqECzESks8XdbVNvSsv9Y
 
 def main():
     readAnswer('Answer.txt')
-    readTarget('output1.txt')
-    getPrecision()
-    GoogPlac(42, -85, 'AIzaSyDkmJL928g4hLfqECzESks8XdbVNvSsv9Y')
+    readOutput('output1.txt')
     
-#     print Target[0].starttime
+    getPrecision()
+    getRecall()
 
+    print "Precision: " + str(Precision)
+    print "Recall: " + str(Recall)
 
 if __name__ == '__main__':
     main()  

@@ -375,9 +375,11 @@ def main():
                 endtime = time
                 if currentActivity is "NOACTIVITYTYPE":
 #                     print starttime
-                    newline2 = starttime + '\t' + endtime + '\t' + datetime.utcfromtimestamp((int(starttime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S') + '\t' + datetime.utcfromtimestamp((int(endtime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%s')  + '\t' + getPlace(lat + "," + longi)
+                    newline2 = starttime + '\t' + endtime + '\t' + datetime.utcfromtimestamp((int(starttime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S') + '\t' + datetime.utcfromtimestamp((int(endtime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S')  + '\t' + getPlace(lat + "," + longi)
+
                 else:
-                    newline2 = starttime + '\t' + endtime + '\t' + datetime.utcfromtimestamp((int(starttime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%s')  + '\t' + datetime.utcfromtimestamp((int(endtime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%s')  + '\t' + currentActivity
+                    newline2 = starttime + '\t' + endtime + '\t' + datetime.utcfromtimestamp((int(starttime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S')  + '\t' + datetime.utcfromtimestamp((int(endtime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S')  + '\t' + currentActivity
+#                     print newline2
                 writeFile2.write(newline2)
                 writeFile2.write("\n")
                  
@@ -393,9 +395,11 @@ def main():
         writeFile.write("\n")
      
     if currentActivity is "NOACTIVITYTYPE":
-        newline2 = starttime + '\t' + endtime + '\t' + datetime.utcfromtimestamp((int(starttime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%s')  + '\t' + datetime.utcfromtimestamp((int(endtime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%s')  + '\t' + getPlace(lat + "," + longi)
+        newline2 = starttime + '\t' + endtime + '\t' + datetime.utcfromtimestamp((int(starttime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S')  + '\t' + datetime.utcfromtimestamp((int(endtime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S')  + '\t' + getPlace(lat + "," + longi)
+#         newline2
     else:
-        newline2 = starttime + '\t'  + endtime + '\t' + datetime.utcfromtimestamp((int(starttime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%s')  + '\t' + datetime.utcfromtimestamp((int(endtime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%s')  + '\t' + currentActivity
+        newline2 = starttime + '\t'  + endtime + '\t' + datetime.utcfromtimestamp((int(starttime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S')  + '\t' + datetime.utcfromtimestamp((int(endtime)-18000000)/1000).strftime('%Y-%m-%d %H:%M:%S')  + '\t' + currentActivity
+#         print newline2
     writeFile2.write(newline2)
     writeFile2.write("\n")
      
@@ -412,7 +416,7 @@ def getPlace(location):
     MyUrl = ('https://maps.googleapis.com/maps/api/place/nearbysearch/json'
          '?location=%s'
          '&radius=20&key=%s') % (location, AUTH_KEY)
-    print MyUrl
+#     print MyUrl
     #grabbing the JSON result
     response = urllib.urlopen(MyUrl)
     jsonRaw = response.read()
@@ -420,18 +424,24 @@ def getPlace(location):
     result = jsonData['results']
     for loc in result:
         ret = ret + loc['name'] + ':'
-        ret = ret + loc['types'][0]
+        
 
         if loc['types'][0].strip() == "point_of_interest":
+            ret = ret + "POI"
             ret = ret + ';'
             continue
+        else:
+            ret = ret + loc['types'][0]
         
-        for i in range(1, len(loc['types'])):   
-            ret = ret + ',' + loc['types'][i]
+        for i in range(1, len(loc['types'])):  
+#             print loc['types'][i] 
             if loc['types'][i].strip() == 'point_of_interest':
+                ret = ret + ',' + "POI"
                 break
+            else:
+                ret = ret + ',' + loc['types'][i]
         ret = ret + ';'
-    print ret
+#     print ret
     return ret
 
 if __name__ == '__main__':

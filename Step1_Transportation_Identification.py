@@ -1,6 +1,6 @@
 import time
 from datetime import datetime, timedelta
-from SettingClass import *
+from Settings import *
 from __builtin__ import True
 from scipy.stats.mstats_basic import threshold
 from logging import thread
@@ -38,7 +38,6 @@ def readData(filename):
         record = Record()
         sub = line.split('\t')
         if sub[0] != "AR": 
-#             print sub[0]
             line = input_file.readline()
             continue
             
@@ -51,14 +50,11 @@ def readData(filename):
         record.rawstring = sub[3].rstrip('\n')
         
         latlong = sub[4].strip().split(',')
-#         latlong = sub[4].split(',')
         record.lat = latlong[0][1:]
         record.long = latlong[1][:-1]
-#         print record.lat + " " + record.long
         
         sub1 = sub[3].split(';;')
         
-    
         probableactivity = []
         for e in sub1:
             activity = e.split(':')[0]
@@ -425,7 +421,6 @@ def getPlace(location):
     for loc in result:
         ret = ret + loc['name'] + ':'
         
-
         if loc['types'][0].strip() == "point_of_interest":
             ret = ret + "POI"
             ret = ret + ';'
